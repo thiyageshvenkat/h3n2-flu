@@ -1,0 +1,20 @@
+name: synopsys_env
+channels:
+  - conda-forge
+  - pytorch
+  - nvidia
+dependencies:
+  - python=3.10
+  - pytorch
+  - torchvision
+  - torchaudio
+  - pytorch-cuda=12.1
+  - pandas
+  - pyarrow           # Parquet
+  - duckdb            # SQL engine
+  - biopython         # FASTA/PDB files
+  - scipy
+  - scikit-learn
+  - pip:
+    - fair-esm        # ESM-2 library
+    - tqdm            # Progress bars
