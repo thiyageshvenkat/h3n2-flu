@@ -14,3 +14,4 @@ __pycache__/
 data/
 *.parquet
 *.fasta
+bin/
