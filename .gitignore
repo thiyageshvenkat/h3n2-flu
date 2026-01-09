@@ -4,14 +4,17 @@ work/
 .nextflow.*
 results/
 
+# Foldx
+*.txt
+*.fxout
+
 # Python
 __pycache__/
 *.pyc
 .venv/
 .env
 
-# DVC's job
-data/
-*.parquet
-*.fasta
-bin/
+# DVC
+data/*
+!data/*.dvc
+!data/.gitignore
