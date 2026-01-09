@@ -1,0 +1,16 @@
+# Nextflow
+work/
+.nextflow/
+.nextflow.*
+results/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.env
+
+# DVC's job
+data/
+*.parquet
+*.fasta
