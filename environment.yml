@@ -1,4 +1,4 @@
-name: synopsys_env
+name: vulcan_local
 channels:
   - conda-forge
   - pytorch
@@ -8,7 +8,7 @@ dependencies:
   - pytorch
   - torchvision
   - torchaudio
-  - pytorch-cuda=12.1
+  - pytorch-cuda=11.8
   - pandas
   - pyarrow           # Parquet
   - duckdb            # SQL engine

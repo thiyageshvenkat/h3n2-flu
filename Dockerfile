@@ -1,5 +1,5 @@
-# 1. NVIDIA base
-FROM nvidia/cuda:12.6.0-devel-ubuntu22.04
+# Use Ubuntu 22.04 base
+FROM ubuntu:22.04
 
 # 2. Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -8,11 +8,13 @@ ENV DEBIAN_FRONTEND=noninteractive \
 # 3. System basics + libraries
 RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
+    libnsl2 \
     git \
     libgl1-mesa-glx \
     libglu1-mesa \
     ca-certificates \
     build-essential \
+    faketime \
     && rm -rf /var/lib/apt/lists/*
 
 # 4. Install Miniforge (which includes Mamba)
@@ -26,9 +28,13 @@ WORKDIR /project
 RUN mamba env create -f environment.yml && mamba clean -afy
 
 # 6. Install FoldX
-COPY bin/foldx /usr/local/bin/foldx
-RUN chmod +x /usr/local/bin/foldx
+COPY bin/foldx /usr/local/bin/foldx_bin
+RUN chmod +x /usr/local/bin/foldx_bin
 
-# 7. Set the default Shell to your mamba environment
-ENTRYPOINT ["mamba", "run", "-n", "h3n2_env", "--no-capture-output"]
-CMD ["/bin/bash"]
+# Create wrapper script that runs FoldX with faketime command
+RUN echo '#!/bin/bash\nexec faketime "-1y" /usr/local/bin/foldx_bin "$@"' > /usr/local/bin/foldx && \
+    chmod +x /usr/local/bin/foldx
+
+ENV FAKETIME="-1y"
+
+ENTRYPOINT ["/bin/bash", "-c"]
