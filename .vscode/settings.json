@@ -1,0 +1,128 @@
+{
+    "terminal.integrated.fontFamily": "Cascadia Mono",
+    "python.defaultInterpreterPath": "C:\\Users\\ven12\\AppData\\Local\\Microsoft\\WindowsApps\\python3.11.exe",
+    "editor.fontFamily": "Jetbrains Mono",
+    "workbench.list.smoothScrolling": true,
+    "editor.fontSize": 12,
+    "editor.cursorSurroundingLines": 6,
+    "editor.smoothScrolling": true,
+    "editor.largeFileOptimizations": true,
+    "terminal.integrated.smoothScrolling": true,
+    "editor.cursorSurroundingLinesStyle": "all",
+    "editor.tokenColorCustomizations": {
+        "textMateRules": [
+            {"scope":"comment", "settings": {
+                "fontStyle": "italic"
+            }},
+            {"scope":"keyword", "settings": {
+                "fontStyle": "bold"
+            }}
+        ]    
+    },
+    "editor.unicodeHighlight.ambiguousCharacters": false,
+    "editor.letterSpacing": 0.3,
+    "editor.lXargeFileOptimizations": false,
+    "code-runner.runInTerminal": true,
+    "window.zoomLevel": 2,
+    "C_Cpp.default.compilerPath": "c:\\Users\\ven12\\OneDrive\\Documents\\GitHub\\wfctest\\main.cpp",
+    "terminal.integrated.enableMultiLinePasteWarning": false,
+    "workbench.colorCustomizations": {
+        
+        "[Vira*]": {
+            "toolbar.activeBackground": "#80CBC426",
+            "activityBarBadge.background": "#80CBC4",
+            "activityBar.activeBorder": "#80CBC4",
+            "activityBarTop.activeBorder": "#80CBC4",
+            "list.inactiveSelectionIconForeground": "#80CBC4",
+            "list.activeSelectionForeground": "#80CBC4",
+            "list.inactiveSelectionForeground": "#80CBC4",
+            "list.highlightForeground": "#80CBC4",
+            "sash.hoverBorder": "#80CBC480",
+            "list.activeSelectionIconForeground": "#80CBC4",
+            "scrollbarSlider.activeBackground": "#80CBC480",
+            "editorSuggestWidget.highlightForeground": "#80CBC4",
+            "textLink.foreground": "#80CBC4",
+            "progressBar.background": "#80CBC4",
+            "pickerGroup.foreground": "#80CBC4",
+            "tab.activeBorder": "#80CBC4",
+            "notificationLink.foreground": "#80CBC4",
+            "editorWidget.resizeBorder": "#80CBC4",
+            "editorWidget.border": "#80CBC4",
+            "settings.modifiedItemIndicator": "#80CBC4",
+            "settings.headerForeground": "#80CBC4",
+            "panelTitle.activeBorder": "#80CBC4",
+            "breadcrumb.activeSelectionForeground": "#80CBC4",
+            "menu.selectionForeground": "#80CBC4",
+            "menubar.selectionForeground": "#80CBC4",
+            "editor.findMatchBorder": "#80CBC4",
+            "selection.background": "#80CBC440",
+            "statusBarItem.remoteBackground": "#80CBC4",
+            "notebook.inactiveFocusedCellBorder": "#80CBC480",
+            "commandCenter.activeBorder": "#80CBC480"
+        }
+    },
+    "materialTheme.accent": "Remove accents",
+    "editor.maxTokenizationLineLength": 2000,
+    "liveServer.settings.donotShowInfoMsg": true,
+    "workbench.startupEditor": "none",
+    "editor.codeLensFontFamily": "cib",
+    "workbench.preferredDarkColorTheme": "Red",
+    "workbench.colorTheme": "Solarized Dark",
+    "workbench.preferredHighContrastColorTheme": "Red",
+    "workbench.preferredLightColorTheme": "Red",
+    "workbench.editorAssociations": {
+        "*.png": "imagePreview.previewEditor"
+    },
+    "r.rpath.windows": "\"C:\\Users\\ven12\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\R\\R 4.5.1.lnk\"",
+    "r.rterm.windows": "\"C:\\Users\\ven12\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\R\\R 4.5.1.lnk\"",
+    "editor.codeLens": false,
+    "terminal.integrated.profiles.windows": {
+        "PowerShell": {
+            "source": "PowerShell",
+            "icon": "terminal-powershell"
+        },
+        "Command Prompt": {
+            "path": "C:\\WINDOWS\\System32\\cmd.exe",
+            "args": []
+        },
+        "Git Bash": {
+            "source": "Git Bash",
+            "icon": "terminal-git-bash"
+        }
+    },
+    "terminal.integrated.defaultProfile.windows": "Command Prompt",
+    "workbench.activityBar.location": "bottom",
+    "zenMode.showTabs": "single",
+    "window.commandCenter": false,
+    "workbench.layoutControl.enabled": false,
+    "window.customTitleBarVisibility": "windowed",
+    "workbench.panel.showLabels": false,
+    "editor.minimap.enabled": false,
+    "zenMode.hideLineNumbers": false,
+    "editor.fontLigatures": true,
+    "editor.allowVariableFontsInAccessibilityMode": true,
+    "editor.inlineSuggest.fontFamily": "Jetbrains Mono",
+    "debug.console.fontFamily": "Jetbrains Mono",
+    "scm.inputFontFamily": "Jetbrains Mono",
+    "chat.editor.fontFamily": "Jetbrains Mono",
+    "terminal.integrated.fontLigatures.enabled": true,
+    "apc.font.family": "Jetbrains Mono",
+    "vscode_custom_css.imports": [
+        "file:///C:/Users/ven12/usaco/editorstyle.css",
+        "file:///c:/Users/ven12/.vscode/extensions/brandonkirbyson.vscode-animations-2.0.7/dist/updateHandler.js"
+    ],
+    "editor.cursorSmoothCaretAnimation": "on",
+    "editor.cursorBlinking": "phase",
+    "files.defaultLanguage": "cpp",
+    "workbench.statusBar.visible": true,
+    "editor.aiStats.enabled": true,
+    "geminicodeassist.displayInlineContextHint": false,
+    "zenMode.hideStatusBar": false,
+    "zenMode.centerLayout": false,
+    "chat.sendElementsToChat.attachCSS": false,
+    "chat.sendElementsToChat.attachImages": false,
+    "chat.sendElementsToChat.enabled": false,
+    "geminicodeassist.project": "fine-presence-httt2",
+    "workbench.productIconTheme": "bongocat",
+    "workbench.iconTheme": "material-icon-theme"
+}
