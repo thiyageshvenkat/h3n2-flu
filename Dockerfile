@@ -23,13 +23,11 @@ RUN wget https://github.com/conda-forge/miniforge/releases/latest/download/Minif
     bash Miniforge3-Linux-x86_64.sh -b -p /opt/conda && \
     rm Miniforge3-Linux-x86_64.sh
 
-# 5. Copy environment.yml and build the environment
+# 5. Copy environment.yml and build the environment (FIXED)
 COPY environment.yml /project/environment.yml
 WORKDIR /project
-RUN mamba env create -f environment.yml && mamba clean -afy
+RUN mamba env update -n base -f environment.yml && mamba clean -afy
 
 # 6. Install FoldX
 COPY bin/foldx /usr/local/bin/foldx
 RUN chmod +x /usr/local/bin/foldx
-
-ENTRYPOINT ["/bin/bash", "-c"]
