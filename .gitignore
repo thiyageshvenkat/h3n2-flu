@@ -18,3 +18,16 @@ __pycache__/
 data/*
 !data/*.dvc
 !data/.gitignore
+
+# molecules (dvc managed)
+molecules/*
+!molecules/*.dvc
+!molecules/.gitignore
+/molecules
+
+# Modeller artifacts
+*.pdb
+*.ali
+*.pap
+
+nextflow

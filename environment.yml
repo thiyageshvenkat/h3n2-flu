@@ -1,20 +1,24 @@
 name: vulcan_local
 channels:
+  - salilab            # for modeller
   - conda-forge
   - pytorch
   - nvidia
 dependencies:
   - python=3.10
+  - modeller           
+  - openmm             # for cleaning
+  - pdbfixer           # for cleaning
   - pytorch
   - torchvision
   - torchaudio
   - pytorch-cuda=11.8
   - pandas
-  - pyarrow           # Parquet
-  - duckdb            # SQL engine
-  - biopython         # FASTA/PDB files
+  - pyarrow            # Parquet
+  - duckdb             # SQL engine
+  - biopython          # FASTA/PDB files
   - scipy
   - scikit-learn
   - pip:
-    - fair-esm        # ESM-2 library
-    - tqdm            # Progress bars
+      - fair-esm       # ESM-2 library
+      - tqdm           # Progress bars

@@ -1,0 +1,6 @@
+outs:
+- md5: c1b6fce0866dfdcb6a9c78f9f5d4c36f.dir
+  size: 7506108
+  nfiles: 1
+  hash: md5
+  path: molecules
