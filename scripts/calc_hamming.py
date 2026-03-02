@@ -2,16 +2,18 @@ from Bio import SeqIO
 import sys
 
 # hamming distance formula
-def hamming_dist(s1, s2):
-    if len(s1) != len(s2):
-        print(f"Warning: Sequence lengths differ ({len(s1)} vs {len(s2)})", file=sys.stderr)
-    return sum(c1 != c2 for c1, c2 in zip(s1, s2))
+def calculate_hamming_distance(sequence_1, sequence_2):
+    if len(sequence_1) != len(sequence_2):
+        print(
+            f"Warning: Sequence lengths differ ({len(sequence_1)} vs {len(sequence_2)})",
+            file=sys.stderr,
+        )
+    return sum(char_1 != char_2 for char_1, char_2 in zip(sequence_1, sequence_2))
+
 
 # load sequences
-ref = list(SeqIO.parse(sys.argv[1], "pdb-seqres"))[0]
-var = list(SeqIO.parse(sys.argv[2], "fasta"))[0]
-
-dist = hamming_dist(ref.seq, var.seq)
-
-# We print only the number so Nextflow can easily capture it as a variable
-print(dist)
+reference_record = next(SeqIO.parse(sys.argv[1], "pdb-seqres"))
+variant_record = next(SeqIO.parse(sys.argv[2], "fasta"))
+total_distance = calculate_hamming_distance(str(reference_record.seq), str(variant_record.seq))
+print(total_distance) # Output for machine
+print(f"Log: Calculated distance for {sys.argv[2]}", file=sys.stderr) # Output for user

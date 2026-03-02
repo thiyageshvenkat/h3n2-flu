@@ -31,3 +31,4 @@ molecules/*
 *.pap
 
 nextflow
+.vscode/*
