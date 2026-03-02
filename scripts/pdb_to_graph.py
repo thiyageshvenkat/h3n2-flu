@@ -5,7 +5,7 @@ import numpy as np
 from torch_geometric.data import Data
 
 def build_protein_graph(pdb_path, embedding_path, output_path):
-    # 1. Load 3D structure
+    # Load 3D structure
     parser = Bio.PDB.PDBParser(QUIET=True)
     structure = parser.get_structure("protein", pdb_path)
     

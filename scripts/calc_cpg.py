@@ -3,9 +3,10 @@ from Bio import SeqIO
 
 def calc_cpg(fasta_file):
     # Load sequence
-    record = list(SeqIO.parse(fasta_file, "fasta"))[0]
+    record = next(SeqIO.parse(fasta_file, "fasta"))
     seq = str(record.seq).upper()
-    
+    if len_seq == 0 or count_c == 0 or count_g == 0:
+        cpg_ratio = 0.0 # extra safety even though already should be checked
     # Calculate base counts
     len_seq = len(seq)
     count_c = seq.count('C')
@@ -20,7 +21,8 @@ def calc_cpg(fasta_file):
         cpg_ratio = count_cg / expected_cg
         
     # Output
-    print(cpg_ratio)
+    print(cpg_ratio) # Output for machine
+    print(f"Log: CpG Ratio: {cpg_ratio}", file=sys.stderr) # Output for user
 
 if __name__ == "__main__":
     # python calc_cpg.py variant.fasta > cpg_score.txt
