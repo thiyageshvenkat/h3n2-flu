@@ -2,6 +2,18 @@ import os
 import sys
 import shutil
 import glob
+import argparse
+import sentry_sdk
+
+sentry_sdk.init(dsn=os.environ.get("SENTRY_DSN"), traces_sample_rate=0.0)
+
+# When MODELLER is installed via conda (salilab channel), its data files live at
+# /opt/conda/lib/modeller-10.X/ — NOT /opt/conda/ directly.
+# Auto-discover the versioned directory and set MODINSTALL10v8 before importing.
+_modeller_dirs = sorted(glob.glob('/opt/conda/lib/modeller-*'))
+if _modeller_dirs:
+    os.environ['MODINSTALL10v8'] = _modeller_dirs[-1]
+
 from modeller import *
 from modeller.automodel import *
 
@@ -10,13 +22,15 @@ def terminate_process(error_message, exit_code=2):
     print(f"ERROR: {error_message}", file=sys.stderr)
     sys.exit(exit_code)
 
-# Ensure script has the correct number of arguments
-if len(sys.argv) != 3:
-    terminate_process("Usage: python build_model.py <variant_sequence.fasta> <template_structure.pdb>")
+# Parse named arguments (--sequence / --template) as called by Nextflow
+parser = argparse.ArgumentParser(description="Run MODELLER homology modeling")
+parser.add_argument("--sequence", required=True, help="Path to variant FASTA file")
+parser.add_argument("--template", required=True, help="Path to template PDB file")
+args = parser.parse_args()
 
-# Define alternative input paths
-sequence_input_path = sys.argv[1]
-template_pdb_path = sys.argv[2]
+# Define input paths
+sequence_input_path = args.sequence
+template_pdb_path = args.template
 
 # CHECK: Verify that input files exist before starting the engine
 if not os.path.isfile(sequence_input_path):
@@ -43,7 +57,19 @@ try:
     # Map the template structure to the alignment object
     sequence_alignment.append_model(reference_structure, align_codes=template_structure_id, atom_files=template_filename)
     # Add the target viral variant sequence
-    sequence_alignment.append(file=sequence_input_path, align_codes='variant', alignment_format='FASTA')
+    # MODELLER's align_codes must match the FASTA header exactly.
+    # GISAID headers are long accession strings that also exceed MODELLER's
+    # internal code length limit, so normalize to a short fixed code 'variant'.
+    normalized_fasta = 'variant_input.fa'
+    with open(sequence_input_path, 'r') as f_in, open(normalized_fasta, 'w') as f_out:
+        first_header = True
+        for line in f_in:
+            if line.startswith('>') and first_header:
+                f_out.write('>variant\n')
+                first_header = False
+            else:
+                f_out.write(line)
+    sequence_alignment.append(file=normalized_fasta, align_codes='variant', alignment_format='FASTA')
     # Perform 2D alignment and generate PIR file for modeling
     sequence_alignment.align2d()
     sequence_alignment.write(file='alignment.ali', alignment_format='PIR')

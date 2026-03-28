@@ -1,8 +1,13 @@
+import os
 import sys
+import sentry_sdk
 import numpy as np
 from Bio import SeqIO
 from sklearn.metrics import mutual_info_score
 from itertools import combinations
+
+sentry_sdk.init(dsn=os.environ.get("SENTRY_DSN"), traces_sample_rate=0.0)
+
 
 
 def calculate_epistasis_matrix(fasta_file, threshold=0.05):

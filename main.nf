@@ -6,12 +6,11 @@ process SPLIT_FASTA {
     path multi_fasta
 
     output:
-    path "*.fasta"
+    path "*.split.fa"
 
     script:
     """
-    # Replaces any character that isn't a letter, number, or underscore with an underscore
-    awk '/^>/{f=substr(\$0,2); gsub(/[^a-zA-Z0-9_]/,"_",f); f=f ".fasta"} {print > f}' ${multi_fasta}
+    awk '/^>/{f=substr(\$0,2); gsub(/[^a-zA-Z0-9_]/,"_",f); f=f ".split.fa"} {print > f}' ${multi_fasta}
     """
 }
 
@@ -46,6 +45,7 @@ process CLEAN_PDB {
 
     script:
     """
+    export PYTHONPATH=.:\${PYTHONPATH:-}
     python ${projectDir}/scripts/clean_pdb.py ${pdb_file} ${pdb_file.baseName}_clean.pdb
     """
 }
@@ -124,15 +124,14 @@ process GENERATE_GRAPH {
     container 'vulcan:latest'
 
     input:
-    path pdb_file
-    path esm_embeddings
+    tuple val(sample_id), path(pdb_file), path(esm_embeddings)
 
     output:
-    path "${pdb_file.baseName}.graph.pt"
+    path "${sample_id}.graph.pt"
 
     script:
     """
-    python ${projectDir}/scripts/pdb_to_graph.py ${pdb_file} ${esm_embeddings} ${pdb_file.baseName}.graph.pt
+    python ${projectDir}/scripts/pdb_to_graph.py ${pdb_file} ${esm_embeddings} ${sample_id}.graph.pt
     """
 }
 
@@ -145,11 +144,20 @@ workflow {
     // Parallel Branch
     CALC_HAMMING(individual_fasta_ch, template_pdb)
 
-    // // Main Modeling Branch
-    // models_ch = BUILD_HOMOLOGY_MODEL(individual_fasta_ch, template_pdb)
-    // cleaned_ch = CLEAN_PDB(models_ch)
-    // repaired_ch = REPAIR_PDB(cleaned_ch)
+    // Main Modeling Branch
+    models_ch = BUILD_HOMOLOGY_MODEL(individual_fasta_ch, template_pdb)
+    cleaned_ch = CLEAN_PDB(models_ch)
+    repaired_ch = REPAIR_PDB(cleaned_ch)
     
-    // // Final Scoring
-    // CALC_STABILITY(repaired_ch)
+    // Final Scoring
+    CALC_STABILITY(repaired_ch)
+
+    // Machine Learning Branch
+    esm2_out = RUN_ESM2(individual_fasta_ch)
+    
+    cleaned_keyed = cleaned_ch.map { file -> [file.baseName.replace('_model_clean', ''), file] }
+    esm_keyed = esm2_out.tensors.map { file -> [file.baseName.replace('.embeddings', ''), file] }
+    paired_ch = cleaned_keyed.join(esm_keyed)
+
+    GENERATE_GRAPH(paired_ch)
 }
