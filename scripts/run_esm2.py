@@ -1,4 +1,15 @@
+import os
 import sys
+
+os.environ.setdefault("HOME", "/tmp")
+os.environ.setdefault("TORCHINDUCTOR_CACHE_DIR", "/tmp/torchinductor_cache")
+os.environ.setdefault("TORCH_HOME", "/tmp/torch_home")
+os.environ.setdefault("HF_HOME", "/tmp/huggingface")
+os.environ.setdefault("TRANSFORMERS_CACHE", "/tmp/huggingface/hub")
+
+import sentry_sdk
+sentry_sdk.init(dsn=os.environ.get("SENTRY_DSN"), traces_sample_rate=0.0)
+
 import torch
 from Bio import SeqIO
 from transformers import AutoTokenizer, AutoModelForMaskedLM

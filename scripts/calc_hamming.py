@@ -1,5 +1,9 @@
-from Bio import SeqIO
+import os
 import sys
+import sentry_sdk
+from Bio import SeqIO
+
+sentry_sdk.init(dsn=os.environ.get("SENTRY_DSN"), traces_sample_rate=0.0)
 
 # hamming distance formula
 def calculate_hamming_distance(sequence_1, sequence_2):

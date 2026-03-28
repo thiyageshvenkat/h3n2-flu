@@ -32,3 +32,23 @@ molecules/*
 
 nextflow
 .vscode/*
+
+# Azure / HuggingFace cache
+.hf_cache/
+
+# Pipeline Outputs & Data
+*.embeddings.pt
+*.perplexity
+*.parquet
+*.csv
+*.fasta
+*.fa
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

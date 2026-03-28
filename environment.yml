@@ -22,3 +22,6 @@ dependencies:
   - pip:
       - fair-esm       # ESM-2 library
       - tqdm           # Progress bars
+      - transformers   # HuggingFace transformers (used by run_esm2.py)
+      - torch-geometric  # PyTorch Geometric (used by pdb_to_graph.py)
+      - sentry-sdk     # Error tracking
