@@ -1,8 +1,12 @@
-import torch
+import os
 import sys
+import sentry_sdk
+import torch
 import Bio.PDB
 import numpy as np
 from torch_geometric.data import Data
+
+sentry_sdk.init(dsn=os.environ.get("SENTRY_DSN"), traces_sample_rate=0.0)
 
 def build_protein_graph(pdb_path, embedding_path, output_path):
     # Load 3D structure
