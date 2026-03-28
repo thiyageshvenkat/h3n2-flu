@@ -3,6 +3,10 @@ import sys
 import glob
 import pandas as pd
 import torch
+import sentry_sdk
+
+sentry_sdk.init(dsn=os.environ.get("SENTRY_DSN"), traces_sample_rate=0.0)
+
 
 def terminate_process(error_message, exit_code=1):
     print(f"FATAL: {error_message}", file=sys.stderr)

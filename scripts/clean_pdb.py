@@ -1,6 +1,10 @@
+import os
+import sys
+import sentry_sdk
 from pdbfixer import PDBFixer
 from openmm.app import PDBFile
-import sys
+
+sentry_sdk.init(dsn=os.environ.get("SENTRY_DSN"), traces_sample_rate=0.0)
 
 def clean_protein_structure(input_pdb_path, output_pdb_path):
     # Initialize PDBFixer with 4O5I.pdb

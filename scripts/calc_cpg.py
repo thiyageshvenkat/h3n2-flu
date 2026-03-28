@@ -1,17 +1,22 @@
+import os
 import sys
+import sentry_sdk
 from Bio import SeqIO
+
+sentry_sdk.init(dsn=os.environ.get("SENTRY_DSN"), traces_sample_rate=0.0)
 
 def calc_cpg(fasta_file):
     # Load sequence
     record = next(SeqIO.parse(fasta_file, "fasta"))
     seq = str(record.seq).upper()
-    if len_seq == 0 or count_c == 0 or count_g == 0:
-        cpg_ratio = 0.0 # extra safety even though already should be checked
     # Calculate base counts
     len_seq = len(seq)
     count_c = seq.count('C')
     count_g = seq.count('G')
     count_cg = seq.count('CG')
+    
+    if len_seq == 0 or count_c == 0 or count_g == 0:
+        cpg_ratio = 0.0 # extra safety even though already should be checked
     
     # Calculate Observed vs Expected CpG Ratio
     if count_c == 0 or count_g == 0:
