@@ -6,6 +6,7 @@ from openmm.app import PDBFile
 
 sentry_sdk.init(dsn=os.environ.get("SENTRY_DSN"), traces_sample_rate=0.0)
 
+
 def clean_protein_structure(input_pdb_path, output_pdb_path):
     # Initialize PDBFixer with 4O5I.pdb
     structure_fixer = PDBFixer(filename=input_pdb_path)
@@ -23,9 +24,12 @@ def clean_protein_structure(input_pdb_path, output_pdb_path):
 
     # Save cleaned structure
     with open(output_pdb_path, "w") as output_file:
-        PDBFile.writeFile(structure_fixer.topology, structure_fixer.positions, output_file)
+        PDBFile.writeFile(
+            structure_fixer.topology, structure_fixer.positions, output_file
+        )
 
     print(f"Successfully cleaned: {input_pdb_path} -> {output_pdb_path}")
+
 
 if __name__ == "__main__":
     # python clean_pdb.py <input.pdb> <output.pdb>
