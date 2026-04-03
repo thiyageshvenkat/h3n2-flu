@@ -1,0 +1,56 @@
+# .dockerignore
+
+# Version control
+.git
+.gitignore
+
+# Nextflow metadata, logs, and work directory
+work/
+.nextflow/
+.nextflow.*
+results/
+nextflow
+
+# Foldx specific
+*.txt
+*.fxout
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.env
+modeller_license.py
+
+# DVC and Large Data
+data/
+molecules/
+*.dvc
+.dvc/
+.dvcignore
+
+# Azure / HuggingFace cache
+.hf_cache/
+
+# Pipeline Outputs, Data, and Artifacts
+*.embeddings.pt
+*.perplexity
+*.parquet
+*.csv
+*.fasta
+*.fa
+*.pdb
+*.ali
+*.pap
+
+# IDE
+.vscode/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
