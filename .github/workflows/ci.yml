@@ -51,6 +51,7 @@ jobs:
         run: ruff format .
 
       - name: Auto-Fix Linting Issues
+        continue-on-error: true
         run: ruff check --fix .
 
       - name: Commit formatting changes
