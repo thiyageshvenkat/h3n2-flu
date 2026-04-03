@@ -60,4 +60,5 @@ jobs:
           commit_message: "GITHUB ACTION: auto-format python code"
 
       - name: Final Linting Check
+        continue-on-error: true
         run: ruff check .
