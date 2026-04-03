@@ -1,6 +1,7 @@
 # H3N2 Flu Pipeline (WIP)
-
 > A Nextflow-based computational pipeline for the structural and sequence analysis of H3N2 Influenza A sequences. This workflow integrates sequence parsing, homology modeling, structural stability evaluation, and protein language model (ESM-2) embeddings to generate structural graphs for downstream machine learning tasks.
+
+![Alt](https://repobeats.axiom.co/api/embed/88738aac43feb67ab56145dd0a35ebd20b314e11.svg "Repobeats analytics image")
 
 ## 🧬 Pipeline Overview
 
