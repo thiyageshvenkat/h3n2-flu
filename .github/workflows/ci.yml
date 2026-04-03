@@ -30,6 +30,7 @@ jobs:
         run: |
           if grep -RIn \
             --exclude-dir=.git \
+            --exclude-dir=.github \
             --binary-files=without-match \
             --fixed-strings "EPI_ISL" .; then
             echo "CRITICAL: GISAID marker detected."
