@@ -8,15 +8,18 @@ os.environ.setdefault("HF_HOME", "/tmp/huggingface")
 os.environ.setdefault("TRANSFORMERS_CACHE", "/tmp/huggingface/hub")
 
 import sentry_sdk
+
 sentry_sdk.init(dsn=os.environ.get("SENTRY_DSN"), traces_sample_rate=0.0)
 
 import torch
 from Bio import SeqIO
 from transformers import AutoTokenizer, AutoModelForMaskedLM
 
+
 def terminate_process(message, exit_code=1):
     print(f"ERROR: {message}", file=sys.stderr)
     sys.exit(exit_code)
+
 
 """
 TODO: GPU, Mean-Pooling features
@@ -54,8 +57,11 @@ embeddings_file = f"{fasta_input_path}.embeddings.pt"
 # Save outputs
 with open(perplexity_file, "w") as f:
     f.write(str(perplexity_score))
-    
+
 torch.save(embeddings_tensor, embeddings_file)
 
-print(embeddings_file) # output for machine
-print(f"Log: Processed {fasta_input_path}. Perplexity: {perplexity_score:.4f}", file=sys.stderr) # output for user
+print(embeddings_file)  # output for machine
+print(
+    f"Log: Processed {fasta_input_path}. Perplexity: {perplexity_score:.4f}",
+    file=sys.stderr,
+)  # output for user

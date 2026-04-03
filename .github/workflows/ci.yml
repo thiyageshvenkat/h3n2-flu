@@ -1,0 +1,64 @@
+name: H3N2-CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  audit-and-lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Secret Scan (TruffleHog)
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          extra_args: --debug --only-verified
+
+      - name: GISAID Compliance Check
+        shell: bash
+        run: |
+          if grep -RIn \
+            --exclude-dir=.git \
+            --exclude-dir=.github \
+            --binary-files=without-match \
+            --fixed-strings "EPI_ISL" .; then
+            echo "CRITICAL: GISAID marker detected."
+            exit 1
+          fi
+
+      - name: Set Up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Ruff
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff
+
+      - name: Auto-Format Code
+        run: ruff format .
+
+      - name: Auto-Fix Linting Issues
+        continue-on-error: true
+        run: ruff check --fix .
+
+      - name: Commit formatting changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "GITHUB ACTION: auto-format python code"
+
+      - name: Final Linting Check
+        continue-on-error: true
+        run: ruff check .
