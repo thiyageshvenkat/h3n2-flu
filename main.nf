@@ -76,7 +76,7 @@ process CALC_STABILITY {
     path repaired_pdb
 
     output:
-    path "Stability_*.fxout"
+    path "*_ST.fxout"
 
     script:
     """
@@ -137,7 +137,7 @@ process GENERATE_GRAPH {
 
 workflow {
     bundle_ch = Channel.fromPath("data/gisaid.fasta")
-    template_pdb = file("data/4O5I.pdb")
+    template_pdb = file("data/4O5I_HA_AB.pdb")
 
     individual_fasta_ch = SPLIT_FASTA(bundle_ch).flatten()
 
