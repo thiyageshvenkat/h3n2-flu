@@ -14,8 +14,8 @@ _modeller_dirs = sorted(glob.glob("/opt/conda/lib/modeller-*"))
 if _modeller_dirs:
     os.environ["MODINSTALL10v8"] = _modeller_dirs[-1]
 
-from modeller import *
-from modeller.automodel import *
+from modeller import alignment, assess, environ, log, model
+from modeller.automodel import automodel
 
 
 def terminate_process(error_message, exit_code=2):
