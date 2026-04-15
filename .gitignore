@@ -30,6 +30,7 @@ molecules/*
 *.pdb
 *.ali
 *.pap
+!data/4O5I_HA_AB.pdb
 
 nextflow
 .vscode/*
