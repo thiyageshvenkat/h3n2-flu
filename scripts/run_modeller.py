@@ -3,19 +3,28 @@ import sys
 import shutil
 import glob
 import argparse
+import importlib
 import sentry_sdk
 
 sentry_sdk.init(dsn=os.environ.get("SENTRY_DSN"), traces_sample_rate=0.0)
 
+# NOTE TO SELF
 # When MODELLER is installed via conda (salilab channel), its data files live at
 # /opt/conda/lib/modeller-10.X/ — NOT /opt/conda/ directly.
 # Auto-discover the versioned directory and set MODINSTALL10v8 before importing.
+
 _modeller_dirs = sorted(glob.glob("/opt/conda/lib/modeller-*"))
 if _modeller_dirs:
     os.environ["MODINSTALL10v8"] = _modeller_dirs[-1]
 
-from modeller import alignment, assess, environ, log, model
-from modeller.automodel import automodel
+modeller = importlib.import_module("modeller")
+automodel_module = importlib.import_module("modeller.automodel")
+alignment = modeller.alignment
+assess = modeller.assess
+environ = modeller.environ
+log = modeller.log
+model = modeller.model
+automodel = automodel_module.automodel
 
 
 def terminate_process(error_message, exit_code=2):
