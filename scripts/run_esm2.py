@@ -1,5 +1,6 @@
 import os
 import sys
+import importlib
 
 os.environ.setdefault("HOME", "/tmp")
 os.environ.setdefault("TORCHINDUCTOR_CACHE_DIR", "/tmp/torchinductor_cache")
@@ -11,9 +12,11 @@ import sentry_sdk
 
 sentry_sdk.init(dsn=os.environ.get("SENTRY_DSN"), traces_sample_rate=0.0)
 
-import torch
-from Bio import SeqIO
-from transformers import AutoTokenizer, AutoModelForMaskedLM
+torch = importlib.import_module("torch")
+SeqIO = importlib.import_module("Bio.SeqIO")
+transformers = importlib.import_module("transformers")
+AutoTokenizer = transformers.AutoTokenizer
+AutoModelForMaskedLM = transformers.AutoModelForMaskedLM
 
 
 def terminate_process(message, exit_code=1):
