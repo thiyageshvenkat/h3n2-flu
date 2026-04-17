@@ -76,7 +76,7 @@ process CALC_STABILITY {
     path repaired_pdb
 
     output:
-    path "*_ST.fxout"
+    path "*.fxout"
 
     script:
     """

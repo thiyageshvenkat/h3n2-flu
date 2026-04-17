@@ -20,7 +20,7 @@ if _modeller_dirs:
 modeller = importlib.import_module("modeller")
 automodel_module = importlib.import_module("modeller.automodel")
 alignment = modeller.alignment
-assess = modeller.assess
+assess = automodel_module.assess
 environ = modeller.environ
 log = modeller.log
 model = modeller.model
