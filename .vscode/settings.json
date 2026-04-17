@@ -73,6 +73,9 @@
     "workbench.editorAssociations": {
         "*.png": "imagePreview.previewEditor"
     },
+    "files.associations": {
+        "*.nf": "groovy"
+    },
     "r.rpath.windows": "\"C:\\Users\\ven12\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\R\\R 4.5.1.lnk\"",
     "r.rterm.windows": "\"C:\\Users\\ven12\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\R\\R 4.5.1.lnk\"",
     "editor.codeLens": false,
