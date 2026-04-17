@@ -17,7 +17,12 @@ def calculate_hamming_distance(sequence_1, sequence_2):
 
 
 # load sequences
-reference_record = next(SeqIO.parse(sys.argv[1], "pdb-seqres"))
+# use pdb-seqres if it works
+# otherwise fall back to pdb-atom
+try:
+    reference_record = next(SeqIO.parse(sys.argv[1], "pdb-seqres"))
+except StopIteration:
+    reference_record = next(SeqIO.parse(sys.argv[1], "pdb-atom"))
 variant_record = next(SeqIO.parse(sys.argv[2], "fasta"))
 total_distance = calculate_hamming_distance(
     str(reference_record.seq), str(variant_record.seq)
