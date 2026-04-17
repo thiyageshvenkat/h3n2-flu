@@ -35,7 +35,9 @@ The pipeline executes the following steps:
    - Default sequence input: `data/gisaid.fasta`
    - Default template: `data/4O5I.pdb`
 
-3. **Run the pipeline:**
+3. **Optional: create `.env` from `.env.example`, fill in any values you need, and source it before running Nextflow**
+
+4. **Run the pipeline:**
    ```bash
    nextflow run main.nf -resume
    ```
@@ -56,9 +58,9 @@ The pipeline publishes results in the `results/` directory:
 
 This pipeline optionally integrates [Sentry](https://sentry.io) for easy remote error tracking.
 
-To enable it, add your DSN to a `.env` file in the project root.
+To enable it, set `SENTRY_DSN` in `.env` and source that file before launching Nextflow. See `.env.example` for the expected format.
 
-If `SENTRY_DSN` is not set, Sentry is automatically disabled and the pipeline will run normally.
+If `SENTRY_DSN` is not exported into the environment, Sentry is automatically disabled and the pipeline will run normally.
 
 ---
 Copyright (c) 2026 @thiyageshvenkat
