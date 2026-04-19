@@ -55,3 +55,6 @@ nextflow
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# manim
+manim/media/
