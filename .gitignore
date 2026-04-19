@@ -57,4 +57,5 @@ ehthumbs.db
 Thumbs.db
 
 # manim
-manim/media/
+manim/
+media/
