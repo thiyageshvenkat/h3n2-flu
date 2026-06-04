@@ -1,3 +1,8 @@
+// inputs to the function
+params.fasta = params.fasta
+params.template_pdb = params.template_pdb
+params.outdir = params.outdir
+
 // Split FASTA
 process SPLIT_FASTA {
     publishDir "results/split_sequences", mode: 'copy'
@@ -136,8 +141,18 @@ process GENERATE_GRAPH {
 }
 
 workflow {
-    bundle_ch = Channel.fromPath("data/gisaid.fasta")
-    template_pdb = file("data/4O5I_HA_AB.pdb")
+    if (!params.fasta) { // Check for required input
+        error "Missing required FASTA input. Run with: --fasta data/[your-input].fasta"
+    }
+    if (!params.template_pdb) { // Check for required input
+        error "Missing required template PDB input. Run with: --template_pdb data/[your-template].pdb"
+    }
+    if (!params.outdir) { // Check for required input
+        error "Missing required output directory input. Run with: --outdir results/[your-output-dir]"
+    }   
+
+    bundle_ch = Channel.fromPath(params.fasta)
+    template_pdb = file(params.template_pdb)
 
     individual_fasta_ch = SPLIT_FASTA(bundle_ch).flatten()
 

@@ -39,7 +39,11 @@ The pipeline executes the following steps:
 
 4. **Run the pipeline:**
    ```bash
-   nextflow run main.nf -resume
+   nextflow run main.nf \
+   --fasta data/gisaid.fasta \
+   --template_pdb data/4O5I_HA_AB.pdb \
+   --outdir results \
+   -resume
    ```
 
 ## 📂 Output Directory Structure
