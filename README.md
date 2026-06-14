@@ -40,7 +40,8 @@ The pipeline executes the following steps:
 4. **Run the pipeline:**
    ```bash
    nextflow run main.nf \
-   --fasta data/gisaid.fasta \
+   --protein data/gisaid_sequences/protein.fasta \
+   --nucleotide data/gisaid_sequences/nucleotide.fasta
    --template_pdb data/4O5I_HA_AB.pdb \
    --outdir results \
    -resume

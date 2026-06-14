@@ -1,5 +1,6 @@
 // inputs to the function
-params.fasta = params.fasta
+params.protein = params.protein
+params.nucleotide = params.nucleotide
 params.template_pdb = params.template_pdb
 params.outdir = params.outdir
 
@@ -141,17 +142,21 @@ process GENERATE_GRAPH {
 }
 
 workflow {
-    if (!params.fasta) { // Check for required input
-        error "Missing required FASTA input. Run with: --fasta data/[your-input].fasta"
+    // Check for required inputs
+    if (!params.protein) { 
+        error "Missing required protein input. Run with: --protein data/[your-protein].fasta"
     }
-    if (!params.template_pdb) { // Check for required input
+    if (!params.nucleotide) {
+        error "Missing required nucleotide input. Run with: --nucleotide data/[your-nucleotide].fasta"
+    }
+    if (!params.template_pdb) {
         error "Missing required template PDB input. Run with: --template_pdb data/[your-template].pdb"
     }
-    if (!params.outdir) { // Check for required input
+    if (!params.outdir) {
         error "Missing required output directory input. Run with: --outdir results/[your-output-dir]"
     }   
 
-    bundle_ch = Channel.fromPath(params.fasta)
+    bundle_ch = Channel.fromPath(params.protein)
     template_pdb = file(params.template_pdb)
 
     individual_fasta_ch = SPLIT_FASTA(bundle_ch).flatten()
