@@ -1,13 +1,25 @@
-// inputs to the function
-params.protein = params.protein
-params.nucleotide = params.nucleotide
-params.template_pdb = params.template_pdb
-params.outdir = params.outdir
+// === Nextflow pipeline for analysis of H3N2 HA sequences ===
 
-// Split FASTA
-process SPLIT_FASTA {
-    publishDir "results/split_sequences", mode: 'copy'
-    
+// Split FASTA for protein sequences
+process SPLIT_PROTEIN_FASTA {
+    publishDir "${params.outdir}/split_protein_sequences", mode: 'copy'
+
+    input:
+    path multi_fasta
+
+    output:
+    path "*.split.fa"
+
+    script:
+    """
+    awk '/^>/{f=substr(\$0,2); gsub(/[^a-zA-Z0-9_]/,"_",f); f=f ".split.fa"} {print > f}' ${multi_fasta}
+    """
+}
+
+// Split FASTA for nucleotide sequences
+process SPLIT_NUCLEOTIDE_FASTA {
+    publishDir "${params.outdir}/split_nucleotide_sequences", mode: 'copy'
+
     input:
     path multi_fasta
 
@@ -22,7 +34,7 @@ process SPLIT_FASTA {
 
 // Homology Modeling
 process BUILD_HOMOLOGY_MODEL {
-    publishDir "results/models", mode: 'copy'
+    publishDir "${params.outdir}/models", mode: 'copy'
     container 'vulcan:latest'
 
     input:
@@ -40,7 +52,7 @@ process BUILD_HOMOLOGY_MODEL {
 
 // Data Cleaning
 process CLEAN_PDB {
-    publishDir "results/cleaned", mode: 'copy'
+    publishDir "${params.outdir}/cleaned", mode: 'copy'
     container 'vulcan:latest'
 
     input:
@@ -58,7 +70,7 @@ process CLEAN_PDB {
 
 // FoldX Repair
 process REPAIR_PDB {
-    publishDir "results/repair", mode: 'copy'
+    publishDir "${params.outdir}/repair", mode: 'copy'
     container 'vulcan:latest'
     
     input:
@@ -75,7 +87,7 @@ process REPAIR_PDB {
 
 // Stability Analysis
 process CALC_STABILITY {
-    publishDir "results/stability", mode: 'copy'
+    publishDir "${params.outdir}/stability", mode: 'copy'
     container 'vulcan:latest'
 
     input:
@@ -92,7 +104,7 @@ process CALC_STABILITY {
 
 // Hamming Distance
 process CALC_HAMMING {
-    publishDir "results/hamming", mode: 'copy'
+    publishDir "${params.outdir}/hamming", mode: 'copy'
     container 'vulcan:latest'
 
     input:
@@ -108,8 +120,24 @@ process CALC_HAMMING {
     """
 }
 
+process CALC_CPG {
+    publishDir "${params.outdir}/cpg", mode: 'copy'
+    container 'vulcan:latest'
+
+    input:
+    path nucleotide_fasta
+
+    output:
+    path "${nucleotide_fasta.baseName}_cpg.txt"
+
+    script:
+    """
+    python ${projectDir}/scripts/calc_cpg.py ${nucleotide_fasta} > ${nucleotide_fasta.baseName}_cpg.txt
+    """
+}
+
 process RUN_ESM2 {
-    publishDir "results/esm2", mode: 'copy'
+    publishDir "${params.outdir}/esm2", mode: 'copy'
     container 'vulcan:latest'
 
     input:
@@ -126,7 +154,7 @@ process RUN_ESM2 {
 }
 
 process GENERATE_GRAPH {
-    publishDir "results/graphs", mode: 'copy'
+    publishDir "${params.outdir}/graphs", mode: 'copy'
     container 'vulcan:latest'
 
     input:
@@ -153,13 +181,15 @@ workflow {
         error "Missing required template PDB input. Run with: --template_pdb data/[your-template].pdb"
     }
     if (!params.outdir) {
-        error "Missing required output directory input. Run with: --outdir results/[your-output-dir]"
+        error "Missing required output directory input. Run with: --outdir [your-output-dir]"
     }   
 
-    bundle_ch = Channel.fromPath(params.protein)
+    protein_bundle_ch = Channel.fromPath(params.protein)
+    nucleotide_bundle_ch = Channel.fromPath(params.nucleotide)
     template_pdb = file(params.template_pdb)
 
-    individual_fasta_ch = SPLIT_FASTA(bundle_ch).flatten()
+    individual_fasta_ch = SPLIT_PROTEIN_FASTA(protein_bundle_ch).flatten()
+    individual_nucleotide_ch = SPLIT_NUCLEOTIDE_FASTA(nucleotide_bundle_ch).flatten()
 
     // Parallel Branch
     CALC_HAMMING(individual_fasta_ch, template_pdb)
@@ -180,4 +210,6 @@ workflow {
     paired_ch = cleaned_keyed.join(esm_keyed)
 
     GENERATE_GRAPH(paired_ch)
+
+    CALC_CPG(individual_nucleotide_ch)
 }

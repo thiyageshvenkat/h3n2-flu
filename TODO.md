@@ -18,7 +18,7 @@ These are just some of the tasks todo.
 - [ ] Create daemons to run and analyze pipeline while running
 - [ ] Implement Sentry.io for cloud
 - [ ] Choose between Runpod and AWS
-- [ ] Finish CpG counting
+- [x] Finish CpG counting
 - [ ] Add AI agent or RAG to evaluate data
   - [ ] For presentation
   - [ ] For evaluation of pipeline
