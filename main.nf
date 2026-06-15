@@ -206,7 +206,7 @@ workflow {
     esm2_out = RUN_ESM2(individual_fasta_ch)
     
     cleaned_keyed = cleaned_ch.map { file -> [file.baseName.replace('_model_clean', ''), file] }
-    esm_keyed = esm2_out.tensors.map { file -> [file.baseName.replace('.embeddings', ''), file] }
+    esm_keyed = esm2_out.tensors.map { file -> [file.name.replaceFirst(/\.fa\.embeddings\.pt$/, ''), file] }
     paired_ch = cleaned_keyed.join(esm_keyed)
 
     GENERATE_GRAPH(paired_ch)
