@@ -33,8 +33,6 @@ molecules/*
 !data/4O5I_HA_AB.pdb
 
 nextflow
-.vscode/*
-.vscode/settings.json
 
 # Azure / HuggingFace cache
 .hf_cache/

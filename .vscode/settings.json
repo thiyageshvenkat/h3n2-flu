@@ -1,0 +1,18 @@
+{
+  "files.associations": {
+    "*.nf": "groovy",
+    "nextflow.config": "groovy",
+    "*.fasta": "plaintext",
+    "*.fa": "plaintext",
+    "*.fastq": "plaintext",
+    "*.fq": "plaintext",
+    "*.yml": "yaml",
+    "*.yaml": "yaml",
+    "Dockerfile*": "dockerfile",
+    "*.dvc": "yaml",
+    ".dvcignore": "ignore",
+    "*.fxout": "tsv",
+    "*.log.*": "log",
+    "*.perplexity": "plaintext"
+  }
+}
