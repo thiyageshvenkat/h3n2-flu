@@ -102,6 +102,7 @@ def load_scalar_features(
 
         variant_record[column_name] = value
 
+
 print(
     f"Log: Scanning input directories: {', '.join(input_directories)}",
     file=sys.stderr,
@@ -109,9 +110,7 @@ print(
 
 for input_directory in input_directories:
     # Parse Hamming distances
-    load_scalar_features(
-        input_directory, "*_dist.txt", "_dist.txt", "Hamming_Distance"
-    )
+    load_scalar_features(input_directory, "*_dist.txt", "_dist.txt", "Hamming_Distance")
 
     # Parse CpG ratios
     load_scalar_features(input_directory, "*_cpg.txt", "_cpg.txt", "CpG_Ratio")
