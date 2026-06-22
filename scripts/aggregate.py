@@ -1,8 +1,8 @@
+import glob
 import os
 import sys
-import glob
+
 import pandas as pd
-import torch
 import sentry_sdk
 
 sentry_sdk.init(dsn=os.environ.get("SENTRY_DSN"), traces_sample_rate=0.0)
@@ -13,19 +13,21 @@ def terminate_process(error_message, exit_code=1):
     sys.exit(exit_code)
 
 
-# Ensure script has the correct number of arguments
-if len(sys.argv) != 3:
+# Accept one wrapper directory or multiple feature directories.
+if len(sys.argv) < 3:
     terminate_process(
-        "Usage: python aggregate.py <results_directory> <output_dataset.parquet>"
+        "Usage: python aggregate.py <input_directory> [<input_directory> ...] "
+        "<output_dataset.parquet>"
     )
 
-# Define better input and output path name
-results_directory = sys.argv[1]
-final_output_parquet = sys.argv[2]
+# The final argument is always the output; every preceding argument is an input folder.
+input_directories = sys.argv[1:-1]
+final_output_parquet = sys.argv[-1]
 
-# CHECK: Verify that the results directory exists
-if not os.path.isdir(results_directory):
-    terminate_process(f"Results directory not found: {results_directory}")
+# CHECK: Verify that every input directory exists.
+for input_directory in input_directories:
+    if not os.path.isdir(input_directory):
+        terminate_process(f"Input directory not found: {input_directory}")
 
 # Dictionary to store all features
 variant_data = {}
@@ -37,55 +39,100 @@ def get_or_create_variant_record(variant_identifier):
     return variant_data[variant_identifier]
 
 
-print(f"Log: Scanning {results_directory} for feature files...", file=sys.stderr)
+def extract_stability_record(filepath, line):
+    if not line:
+        print(f"WARNING: Skipping empty stability file {filepath}", file=sys.stderr)
+        return None
 
-# Parse Hamming distances
-for filepath in glob.glob(
-    os.path.join(results_directory, "**", "*__dist.txt"), recursive=True
-):
-    filename = os.path.basename(filepath)
-    variant_identifier = filename.replace("__dist.txt", "")
-    with open(filepath, "r") as file:
-        get_or_create_variant_record(variant_identifier)["Hamming_Distance"] = float(
-            file.read().strip()
+    parts = line.split()
+    if len(parts) < 2:
+        print(
+            f"WARNING: Skipping malformed stability file {filepath}: {line!r}",
+            file=sys.stderr,
         )
+        return None
 
-# Parse CpG ratios
-for filepath in glob.glob(
-    os.path.join(results_directory, "**", "*_cpg.txt"), recursive=True
-):
-    filename = os.path.basename(filepath)
-    variant_identifier = filename.replace("_cpg.txt", "")
-    with open(filepath, "r") as file:
-        get_or_create_variant_record(variant_identifier)["CpG_Ratio"] = float(
-            file.read().strip()
-        )
+    pdb_name = os.path.basename(parts[0])
+    variant_identifier = pdb_name.removesuffix("__Repair.pdb").removesuffix(
+        "_Repair.pdb"
+    )
+    return variant_identifier, parts[1]
 
-# Parse ESM-2 perplexity scores
-for filepath in glob.glob(
-    os.path.join(results_directory, "**", "*.perplexity"), recursive=True
-):
-    filename = os.path.basename(filepath)
-    variant_identifier = filename.replace(".perplexity", "")
-    with open(filepath, "r") as file:
-        get_or_create_variant_record(variant_identifier)["ESM2_Perplexity"] = float(
-            file.read().strip()
-        )
 
-# Parse ESM-2 embeddings
-for filepath in glob.glob(
-    os.path.join(results_directory, "**", "*.embeddings.pt"), recursive=True
+# Function to load scalar features from files with redundancy checks and error handling
+def load_scalar_features(
+    results_directory, pattern, suffix, column_name, record_extractor=None
 ):
-    filename = os.path.basename(filepath)
-    variant_identifier = filename.replace(".embeddings.pt", "")
-    embedding_tensor = torch.load(filepath, weights_only=True)
-    get_or_create_variant_record(variant_identifier)["ESM2_Embeddings"] = (
-        embedding_tensor.tolist()
+    for filepath in glob.glob(
+        os.path.join(results_directory, "**", pattern), recursive=True
+    ):
+        filename = os.path.basename(filepath)
+
+        with open(filepath, "r", encoding="utf-8") as file:
+            line = file.read().strip()
+
+        if record_extractor is None:
+            variant_identifier = filename.removesuffix(suffix)
+            raw_value = line
+        else:
+            extracted_record = record_extractor(filepath, line)
+            if extracted_record is None:
+                continue
+            variant_identifier, raw_value = extracted_record
+
+        variant_identifier = variant_identifier.removesuffix("_.split")
+
+        try:
+            value = float(raw_value)
+        except ValueError:
+            print(
+                f"WARNING: Skipping invalid {column_name} in {filepath}: {raw_value!r}",
+                file=sys.stderr,
+            )
+            continue
+
+        variant_record = get_or_create_variant_record(variant_identifier)
+        if column_name in variant_record:
+            print(
+                f"WARNING: Duplicate {column_name} for {variant_identifier}; "
+                f"overwriting {variant_record[column_name]!r} with {value!r} "
+                f"from {filepath}",
+                file=sys.stderr,
+            )
+
+        variant_record[column_name] = value
+
+print(
+    f"Log: Scanning input directories: {', '.join(input_directories)}",
+    file=sys.stderr,
+)
+
+for input_directory in input_directories:
+    # Parse Hamming distances
+    load_scalar_features(
+        input_directory, "*_dist.txt", "_dist.txt", "Hamming_Distance"
+    )
+
+    # Parse CpG ratios
+    load_scalar_features(input_directory, "*_cpg.txt", "_cpg.txt", "CpG_Ratio")
+
+    # Parse ESM-2 perplexity scores
+    load_scalar_features(
+        input_directory, "*.perplexity", ".fa.perplexity", "ESM2_Perplexity"
+    )
+
+    # Parse FoldX stability scores
+    load_scalar_features(
+        input_directory,
+        "*.fxout",
+        None,
+        "Stability_Score",
+        record_extractor=extract_stability_record,
     )
 
 # CHECK: Ensure features were actually found
 if not variant_data:
-    terminate_process(f"No feature files found in {results_directory}.")
+    terminate_process(f"No feature files found in: {', '.join(input_directories)}")
 
 # Convert dictionary to pandas DataFrame
 master_dataset = pd.DataFrame.from_dict(variant_data, orient="index")

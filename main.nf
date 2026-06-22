@@ -72,7 +72,7 @@ process CLEAN_PDB {
 process REPAIR_PDB {
     publishDir "${params.outdir}/repair", mode: 'copy'
     container 'vulcan:latest'
-    
+
     input:
     path model_pdb
 
@@ -169,9 +169,28 @@ process GENERATE_GRAPH {
     """
 }
 
+process AGGREGATE_RESULTS {
+    publishDir "${params.outdir}/aggregated", mode: 'copy'
+    container 'vulcan:latest'
+
+    input:
+    path stability_files, stageAs: 'stability/*'
+    path hamming_files, stageAs: 'hamming/*'
+    path cpg_files, stageAs: 'cpg/*'
+    path esm2_files, stageAs: 'esm2/*'
+
+    output:
+    path "aggregated_results.parquet"
+
+    script:
+    """
+    python ${projectDir}/scripts/aggregate.py stability hamming cpg esm2 aggregated_results.parquet
+    """
+}
+
 workflow {
     // Check for required inputs
-    if (!params.protein) { 
+    if (!params.protein) {
         error "Missing required protein input. Run with: --protein data/[your-protein].fasta"
     }
     if (!params.nucleotide) {
@@ -182,34 +201,41 @@ workflow {
     }
     if (!params.outdir) {
         error "Missing required output directory input. Run with: --outdir [your-output-dir]"
-    }   
+    }
 
-    protein_bundle_ch = Channel.fromPath(params.protein)
-    nucleotide_bundle_ch = Channel.fromPath(params.nucleotide)
-    template_pdb = file(params.template_pdb)
+    protein_bundle_ch = channel.fromPath(params.protein, checkIfExists: true)
+    nucleotide_bundle_ch = channel.fromPath(params.nucleotide, checkIfExists: true)
+    template_pdb = file(params.template_pdb, checkIfExists: true)
 
     individual_fasta_ch = SPLIT_PROTEIN_FASTA(protein_bundle_ch).flatten()
     individual_nucleotide_ch = SPLIT_NUCLEOTIDE_FASTA(nucleotide_bundle_ch).flatten()
 
     // Parallel Branch
-    CALC_HAMMING(individual_fasta_ch, template_pdb)
+    hamming_ch = CALC_HAMMING(individual_fasta_ch, template_pdb)
 
     // Main Modeling Branch
     models_ch = BUILD_HOMOLOGY_MODEL(individual_fasta_ch, template_pdb)
     cleaned_ch = CLEAN_PDB(models_ch)
     repaired_ch = REPAIR_PDB(cleaned_ch)
-    
+
     // Final Scoring
-    CALC_STABILITY(repaired_ch)
+    stability_ch = CALC_STABILITY(repaired_ch)
 
     // Machine Learning Branch
     esm2_out = RUN_ESM2(individual_fasta_ch)
-    
+
     cleaned_keyed = cleaned_ch.map { file -> [file.baseName.replace('_model_clean', ''), file] }
     esm_keyed = esm2_out.tensors.map { file -> [file.name.replaceFirst(/\.fa\.embeddings\.pt$/, ''), file] }
     paired_ch = cleaned_keyed.join(esm_keyed)
 
     GENERATE_GRAPH(paired_ch)
 
-    CALC_CPG(individual_nucleotide_ch)
+    cpg_ch = CALC_CPG(individual_nucleotide_ch)
+
+    AGGREGATE_RESULTS(
+        stability_ch.collect(),
+        hamming_ch.collect(),
+        cpg_ch.collect(),
+        esm2_out.scores.collect()
+    )
 }
