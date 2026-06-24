@@ -5,19 +5,19 @@ These are just some of the tasks todo.
 ### Todo
 
 - [ ] Preflight chech `.sh` script
-- [ ] Docker
-  - [ ] publish to GCHR
-  - [ ] Github Action to check size
-  - [ ] Github Action to build image
+- [x] Docker
+  - [x] publish to GCHR
 - [ ] Connect to Seqera or run on cloud
 - [ ] Add test cases
-- [ ] Establish parquet/DuckDB workflow
-- [ ] Work on viral IDs
+- [x] Establish parquet/DuckDB workflow
+  - [x] parquet
+  - [x] DuckDB
+- [x] Work on viral IDs --> official WHO standard used, ignoring EPIx from GISAID when downloading
 - [ ] Add more metrics to pipeline
 - [ ] Create a web interface for pipeline
 - [ ] Create daemons to run and analyze pipeline while running
-- [ ] Implement Sentry.io for cloud
-- [ ] Choose between Runpod and AWS
+- [x] Implement Sentry.io for cloud
+- [x] Choose between Runpod and AWS
 - [x] Finish CpG counting
 - [ ] Add AI agent or RAG to evaluate data
   - [ ] For presentation

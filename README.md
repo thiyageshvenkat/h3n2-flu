@@ -95,5 +95,34 @@ Run the pipeline from WSL if desired, then use PowerShell to sync artifacts:
 ```
 dvc push -v
 ```
+
+## DuckDB CLI
+DuckDB is used to query `.parquet` and other table-like artifacts.
+### Installation
+```bash
+curl https://install.duckdb.org | sh
+```
+### Run
+Open or create a local DuckDB database, create a view over the aggregated Parquet file, and summarize the dataset:
+```bash
+duckdb results/duckdb/h3n2.duckdb
+CREATE OR REPLACE VIEW variants AS
+   SELECT *
+   FROM read_parquet('results/aggregated/aggregated_results.parquet');
+h3n2 D SUMMARIZE variants;
+```
+### Output
+```
+┌──────────────────┬─────────────┬───────────────────────┬──────────────────────┬───────────────┬────────────────────┬───┬────────────────────┬─────────────────────┬────────────────────┬───────┬─────────────────┐
+│   column_name    │ column_type │          min          │         max          │ approx_unique │        avg         │ … │        q25         │         q50         │        q75         │ count │ null_percentage │
+│     varchar      │   varchar   │        varchar        │       varchar        │     int64     │      varchar       │ … │      varchar       │       varchar       │      varchar       │ int64 │  decimal(9,2)   │
+├──────────────────┼─────────────┼───────────────────────┼──────────────────────┼───────────────┼────────────────────┼───┼────────────────────┼─────────────────────┼────────────────────┼───────┼─────────────────┤
+│ Stability_Score  │ DOUBLE      │ 294.126               │ 388.008              │            23 │ 326.20450000000005 │ … │ 308.959            │ 322.992             │ 337.638            │    38 │            0.00 │
+│ Hamming_Distance │ DOUBLE      │ 300.0                 │ 301.0                │             2 │ 300.86842105263156 │ … │ 301.0              │ 301.0               │ 301.0              │    38 │            0.00 │
+│ CpG_Ratio        │ DOUBLE      │ 0.0                   │ 0.481403740477819    │            18 │ 0.2792196003407591 │ … │ 0.0                │ 0.45080824050764723 │ 0.4680314143534351 │    38 │            0.00 │
+│ ESM2_Perplexity  │ DOUBLE      │ 1.2484898567199707    │ 1.2595747709274292   │            24 │ 1.254385609375803  │ … │ 1.2521368265151978 │ 1.2536463141441345  │ 1.2575433254241943 │    38 │            0.00 │
+│ Variant_ID       │ VARCHAR     │ A_Badajoz_18773566_H… │ EPI5184759_HA_A_Fra… │            28 │ NULL               │ … │ NULL               │ NULL                │ NULL               │    38 │            0.00 │
+└──────────────────┴─────────────┴───────────────────────┴──────────────────────┴───────────────┴────────────────────┴───┴────────────────────┴─────────────────────┴────────────────────┴───────┴─────────────────┘
+```
 ---
 Copyright (c) 2026 @thiyageshvenkat
