@@ -15,6 +15,9 @@ __pycache__/
 .env
 modeller_license.py
 
+# Local tools
+bin/
+
 # DVC
 data/*
 !data/*.dvc
